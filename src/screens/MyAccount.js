@@ -1,15 +1,18 @@
-import React from "react"
+import React, {useContext} from "react"
 
 import { View,Text,StyleSheet,SafeAreaView, StatusBar} from "react-native"
 import { colors,parameters } from "../global/styles"
 import { Title, Caption,TouchableRipple} from "react-native-paper"
 import {Icon, Avatar,Button} from 'react-native-elements'
 import HomeHeader from "../components/HomeHeader"
+import { SignInContext } from "../contexts/authContext"
 
 
 
 export default function MyAccount({navigation}){
-  
+
+    const {signedIn} = useContext(SignInContext)
+
     return(
         <View style = {styles.container}>
           
@@ -31,7 +34,7 @@ export default function MyAccount({navigation}){
                         size = {80}
                     />
                     <View style = {{marginLeft:20}}>
-                        <Title style = {styles.title}>Kate Pokrovskaya</Title>
+                        <Title style = {styles.title}>{`${signedIn.name ?? ''} ${signedIn.surname ?? ''}`}</Title>
                     </View>
                 </View>
             </View>
@@ -44,12 +47,12 @@ export default function MyAccount({navigation}){
 
                 <View style = {styles.row}>
                     <Icon name = "phone" type = 'material' size = {20} color = {colors.buttons}/>
-                    <Text style = {{color:colors.grey1, marginLeft:15}}>89172952222</Text>
+                    <Text style = {{color:colors.grey1, marginLeft:15}}>{signedIn.phone ?? ''}</Text>
                 </View>
 
                 <View style = {styles.row}>
                     <Icon name = "email" type = 'material' size = {20} color = {colors.buttons}/>
-                    <Text style = {{color:colors.grey1, marginLeft:15}}>pokr.kate@gmail.com</Text>
+                    <Text style = {{color:colors.grey1, marginLeft:15}}>{signedIn.email ?? ''}</Text>
                 </View>
 
                 <View style={styles.infoBoxWrapper}>

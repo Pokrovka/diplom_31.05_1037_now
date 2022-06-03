@@ -7,18 +7,33 @@ import * as Animatable from 'react-native-animatable'
 import { SignInContext } from "../../contexts/authContext"
 import auth from '@react-native-firebase/auth';
 import Swiper from 'react-native-swiper'
+import firestore from '@react-native-firebase/firestore'
 
 export default function SignInWelcome({navigation}){
 
 
     const {dispatchSignedIn} = useContext(SignInContext)
 
+    const fetchInfo = async (userId) => {
+        let userInfo = await firestore().collection('users').where('userId', '==', userId).get()
+        tempInfo = {...userInfo.docs[0]?.data(), id: userInfo.docs[0]?.id};
+        return {
+            name: tempInfo.name, 
+            surname: tempInfo.surname, 
+            phone: tempInfo.phone
+        }
+    }
+
     useEffect(() => {
-        auth().onAuthStateChanged((user) => {
+        auth().onAuthStateChanged(async (user) => {
+            console.log(user)
             if(user){
-                dispatchSignedIn({type:"UPDATE_SIGN_IN", payload:{userToken:"signed-in"}})
+                dispatchSignedIn({type:"UPDATE_SIGN_IN", payload:{userToken: user.uid}})
+                dispatchSignedIn({type:'UPDATE_EMAIL', payload:{email: user.email}})
+                dispatchSignedIn({type:"UPDATE_ACCOUNT", payload: await fetchInfo(user.uid)})
             } else{
-                dispatchSignedIn({type:"UPDATE_SIGN_IN", payload:{userToken:null}})
+                dispatchSignedIn({type:"UPDATE_SIGN_IN", payload:{userToken: null}})
+                dispatchSignedIn({type:'UPDATE_EMAIL', payload:{email: null}})
             }
         })
     },[])

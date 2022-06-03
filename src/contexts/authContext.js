@@ -7,6 +7,10 @@ export const SignInContextProvider = (props)=>{
 
 const[signedIn,dispatchSignedIn] = useReducer(SignInReducer,{
     userToken:null,
+    name: '',
+    surname: '',
+    phone: '',
+    email: '',
 })
 
 return(

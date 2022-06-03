@@ -1,17 +1,21 @@
 import { StyleSheet, Text, View, ScrollView, TextInput,Alert} from 'react-native'
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import { colors } from '../../global/styles'
 import Header from '../../components/Header'
 import { Formik } from 'formik'
 import { Icon,Button} from 'react-native-elements'
 import * as Animatable from 'react-native-animatable'
 import auth from '@react-native-firebase/auth'
+import firestore from '@react-native-firebase/firestore'
+import { SignInContext } from "../../contexts/authContext"
 
 
 
 const initialValues = {name:"",surname:"",password:"",email:''}
 
 const SignUp = ({navigation}) => {
+
+    const {dispatchSignedIn} = useContext(SignInContext)
 
     const [PassordFocussed,setPassordFocussed] = useState(false)
     const [PasswordBlured,setPasswordBlured] = useState(false)
@@ -20,8 +24,16 @@ const SignUp = ({navigation}) => {
         const {email,password, name, surname} = values
 
         try{
-            await auth().createUserWithEmailAndPassword(email,password)
+            const userCredential  = await auth().createUserWithEmailAndPassword(email,password)
+            await firestore().collection('users').add({
+                name: name, 
+                surname: surname,
+                userId: userCredential.user.uid,
+                phone: '',
+            })
             console.log("АККАУНТ ПОЛЬЗОВАТЕЛЯ СОЗДАН")
+            dispatchSignedIn({type:"UPDATE_SIGN_IN", payload:{userToken: userCredential.user.uid}})
+
             alert('аккаунт создан')
         }
         catch(error){

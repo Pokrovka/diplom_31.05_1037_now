@@ -1,4 +1,4 @@
-import React,{useState} from "react"
+import React,{useState, useContext, useEffect} from "react"
 import {View,Text,StyleSheet,TouchableOpacity,
      StatusBar, ImageBackground} from "react-native"
 import {Icon} from 'react-native-elements'
@@ -6,8 +6,40 @@ import {TextInput} from "react-native-paper"
 import { colors } from "../global/styles"
 import FormButton from "../components/FormButton"
 import HomeHeader from '../components/HomeHeader'
+import { SignInContext } from "../contexts/authContext"
+import firestore from '@react-native-firebase/firestore'
 
 const EditMyAccount = ({navigation}) => {
+    const {signedIn, dispatchSignedIn} = useContext(SignInContext)
+    const [original, setOriginal] = useState()
+    const [name, setName] = useState('');
+    const [surname, setSurname] = useState('');
+    const [phone, setPhone] = useState('');
+
+    const fetchData = async () => {
+      let userInfo = await firestore().collection('users').where('userId', '==', signedIn.userToken).get()
+        tempInfo = {...userInfo.docs[0]?.data(), id: userInfo.docs[0]?.id};
+        setOriginal(tempInfo)
+        setName(tempInfo?.name);
+        setSurname(tempInfo?.surname);
+        setPhone(tempInfo?.phone);
+    }
+
+    useEffect(() => {
+      fetchData()
+    }, [])
+
+    const updateAccountInfo = async () => {
+      console.log('id', original.id, name, surname, phone)
+      await firestore().collection('users').doc(original.id).update({
+        name: name,
+        surname: surname,
+        phone: phone,
+      })
+      console.log('INFO UPDATED!')
+      dispatchSignedIn({type:"UPDATE_ACCOUNT", payload: {name: name, surname: surname, phone: phone}})
+      fetchData()
+    }
     return(
         <View style= {styles.container}>
             <StatusBar
@@ -27,21 +59,13 @@ const EditMyAccount = ({navigation}) => {
                                  imageStyle = {{borderRadius:15}}
                                  >
                                 <View style = {{flex:1, justifyContent:'center',alignItems:'center'}}>
-                                    {/* <Icon name="camera" size={35} color={colors.grey4} style ={{
-                                        opacity:0.7,
-                                        alignItems:'center',
-                                        justifyContent:'center',
-                                        borderWidth:1,
-                                        borderColor:colors.grey4,
-                                        borderRadius:10
-                                    }}/> */}
                                 </View>
                             </ImageBackground>
                         </View>
                     </TouchableOpacity>
 
                     <Text style ={{marginTop:20, fontSize:18, fontWeight:'bold'}}>
-                        Kate Pokrovskaya
+                        {`${original?.name ?? ''} ${original?.surname ?? ''}`}
                     </Text>
                 </View>
 
@@ -58,7 +82,8 @@ const EditMyAccount = ({navigation}) => {
                         placeholderTextColor = {colors.grey5}
                         backgroundColor = {colors.grey4}
                         autoCorrect = {false}
-
+                        value={name}
+                        onChange={e => {setName(e.nativeEvent.text)}}
                      />
                  </View>
 
@@ -75,6 +100,8 @@ const EditMyAccount = ({navigation}) => {
                         placeholderTextColor = {colors.grey5}
                         backgroundColor = {colors.grey4}
                         autoCorrect = {false}
+                        value={surname}
+                        onChange={e => setSurname(e.nativeEvent.text)}
                      />
                  </View>
 
@@ -92,27 +119,11 @@ const EditMyAccount = ({navigation}) => {
                         backgroundColor = {colors.grey4}
                         keyboardType = "number-pad"
                         autoCorrect = {false}
+                        value={phone}
+                        onChange={e => setPhone(e.nativeEvent.text)}
                      />
                  </View>
-
-                 <View style = {styles.action}>
-                 <Icon                         
-                        type = "material-community"
-                        name = "email"
-                        color = {colors.grey5}
-                        size = {20}
-                        style = {{marginLeft:20}}
-                    />
-                     <TextInput
-                        placeholder = "Email"
-                        placeholderTextColor = {colors.grey5}
-                        backgroundColor = {colors.grey4}
-                        autoCorrect = {false}
-                        keyboardType = "email-address"
-                        style = {{borderBottomWidth:0}}
-                     />
-                 </View>
-                 <FormButton buttonTitle = "Сохранить" onPress = {() =>{}}/>
+                 <FormButton buttonTitle = "Сохранить" onPress = {updateAccountInfo}/>
             </View>
         </View>
     )

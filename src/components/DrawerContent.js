@@ -8,7 +8,7 @@ import {SignInContext} from '../contexts/authContext'
 
 export default function DrawerContent(props){
 
-    const {dispatchSignedIn} = useContext(SignInContext)
+    const {signedIn, dispatchSignedIn} = useContext(SignInContext)
 
 
     async function signOut(){
@@ -39,8 +39,8 @@ export default function DrawerContent(props){
     
                     />
                     <View style = {{marginLeft:10}}>
-                        <Text style = {{fontWeight:"bold", color:colors.cardbackground,fontSize:15}}>Kate Pokrovskaya</Text>
-                        <Text style = {{color:colors.cardbackground,fontSize:14}}>pokr.kate@gmail.com</Text>
+                        <Text style = {{fontWeight:"bold", color:colors.cardbackground,fontSize:15}}>{`${signedIn.name ?? ''} ${signedIn.surname ?? ''}`}</Text>
+                        <Text style = {{color:colors.cardbackground,fontSize:14}}>{`${signedIn.email}`}</Text>
 
                         </View>
                     

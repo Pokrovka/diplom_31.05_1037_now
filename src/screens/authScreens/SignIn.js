@@ -17,18 +17,26 @@ export default function SignIn({navigation}){
     const textInput1 = useRef(1)
     const textInput2 = useRef(2)
 
-
+    const fetchInfo = async (userId) => {
+        let userInfo = await firestore().collection('users').where('userId', '==', userId).get()
+        tempInfo = {...userInfo.docs[0]?.data(), id: userInfo.docs[0]?.id};
+        return {
+            name: tempInfo.name, 
+            surname: tempInfo.surname, 
+            phone: tempInfo.phone
+        }
+    }
 
     async function signIn(data){
         try{
         const {password,email} = data
         const user = await auth().signInWithEmailAndPassword(email,password)
         if (user) {
-             console.log("USER SIGNED-IN")
-            //console.log(user)
-            dispatchSignedIn({type:"UPDATE_SIGN_IN", payload:{userToken:"signed-in"}})
-
-
+            console.log(user.user.uid)
+            dispatchSignedIn({type:"UPDATE_SIGN_IN", payload:{userToken: user.user.uid}})
+            dispatchSignedIn({type:'UPDATE_EMAIL', payload:{email: user.user.email}})
+            dispatchSignedIn({type:"UPDATE_ACCOUNT", payload: await fetchInfo(user.user.uid)})
+            console.log("USER SIGNED-IN")
         }
     }
         catch(error){
