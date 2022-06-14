@@ -13,7 +13,6 @@ export default function Home({navigation}){
     
 const [categories, setCategories] = useState([])
 const [shops, setShops] = useState([])
-const [delivery, setDelivery] = useState(true)
 const [indexCheck, setIndexCheck] = useState("0")
 
 useEffect(() => {  

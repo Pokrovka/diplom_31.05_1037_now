@@ -60,7 +60,7 @@ export default function MyAccount({navigation}){
                     borderRightColor: colors.grey4,
                     borderRightWidth: 1
                   }]}>
-                    <Title style = {styles.title}>13</Title>
+                    <Title style = {styles.title}>0</Title>
                     <Caption style={styles.menuItemText1}>Избранное</Caption>
                   </View>
                   <View style={styles.infoBox}>

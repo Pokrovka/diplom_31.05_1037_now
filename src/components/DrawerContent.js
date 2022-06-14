@@ -48,7 +48,7 @@ export default function DrawerContent(props){
                 <View style = {{flexDirection:"row",justifyContent:"space-evenly",paddingBottom:5}}>
                 <View style = {{flexDirection:"row", marginTop:0}}>
                         <View style = {{marginLeft:10, alignItems:"center", justifyContent:"center"}}>
-                            <Text style = {{fontWeight:"bold", color:colors.cardbackground,fontSize:18}}>13</Text>
+                            <Text style = {{fontWeight:"bold", color:colors.cardbackground,fontSize:18}}>0</Text>
                             <Text style = {{color:colors.cardbackground,fontSize:14}}>Избранное</Text>
                         </View>
                     </View>
